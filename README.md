@@ -118,6 +118,8 @@ curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/
 
 Both installers are non-interactive. They install systemd services when systemd is available, otherwise they start the binaries with `nohup`.
 
+For the full Gateway + GPU client deployment runbook, see [docs/deployment.md](docs/deployment.md).
+
 ## Configuration
 
 Common overrides:
