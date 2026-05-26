@@ -59,7 +59,28 @@ prepare_certificates() {
       exit 1
     fi
     local cert_name="${HFT_GATEWAY_SERVER_NAME:-$(hostname -f 2>/dev/null || hostname)}"
+    local san_key="DNS.1"
+    if [[ "$cert_name" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ || "$cert_name" == *:* ]]; then
+      san_key="IP.1"
+    fi
+    cat > "$TMP_DIR/gateway-openssl.cnf" <<EOF
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = ${cert_name}
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+${san_key} = ${cert_name}
+EOF
     openssl req -x509 -newkey rsa:3072 -nodes -days "${HFT_GATEWAY_CERT_DAYS:-3650}" \
+      -config "$TMP_DIR/gateway-openssl.cnf" \
+      -extensions v3_req \
       -subj "/CN=${cert_name}" \
       -keyout "$KEY_FILE" \
       -out "$CERT_FILE" >/dev/null 2>&1
