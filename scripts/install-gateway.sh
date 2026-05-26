@@ -12,6 +12,10 @@ CERT_FILE="${HFT_GATEWAY_TLS_CERT:-/etc/HuggingFlowTransformers/gateway.crt}"
 KEY_FILE="${HFT_GATEWAY_TLS_KEY:-/etc/HuggingFlowTransformers/gateway.key}"
 PACKAGE_NAME="HuggingFlowTransformers-linux-${ARCH_LABEL}-v${VERSION}.tar.gz"
 PACKAGE_URL="${HFT_PACKAGE_URL:-https://github.com/${REPO}/releases/download/v${VERSION}/${PACKAGE_NAME}}"
+DOWNLOAD_RETRIES="${HFT_DOWNLOAD_RETRIES:-5}"
+DOWNLOAD_RETRY_DELAY="${HFT_DOWNLOAD_RETRY_DELAY:-3}"
+DOWNLOAD_CONNECT_TIMEOUT="${HFT_DOWNLOAD_CONNECT_TIMEOUT:-15}"
+DOWNLOAD_MAX_TIME="${HFT_DOWNLOAD_MAX_TIME:-300}"
 TMP_DIR="$(mktemp -d)"
 
 cleanup() {
@@ -34,11 +38,14 @@ download() {
     return
   fi
   if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$url" -o "$output"
+    curl --retry "$DOWNLOAD_RETRIES" --retry-delay "$DOWNLOAD_RETRY_DELAY" \
+      --connect-timeout "$DOWNLOAD_CONNECT_TIMEOUT" --max-time "$DOWNLOAD_MAX_TIME" \
+      -fsSL "$url" -o "$output"
     return
   fi
   if command -v wget >/dev/null 2>&1; then
-    wget -qO "$output" "$url"
+    wget --tries="$DOWNLOAD_RETRIES" --timeout="$DOWNLOAD_CONNECT_TIMEOUT" \
+      --read-timeout="$DOWNLOAD_MAX_TIME" -qO "$output" "$url"
     return
   fi
   echo "curl or wget is required." >&2
