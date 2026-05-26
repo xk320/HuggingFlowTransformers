@@ -114,11 +114,12 @@ EOF
 
 install_no_systemd() {
   mkdir -p /var/run/HuggingFlowTransformers
+  mkdir -p /var/log/HuggingFlowTransformers
   set -a
   # shellcheck disable=SC1090
   . "$ENV_FILE"
   set +a
-  nohup "$BIN_DIR/hft-gateway" >/dev/null 2>&1 &
+  nohup "$BIN_DIR/hft-gateway" >>/var/log/HuggingFlowTransformers/gateway.log 2>&1 &
   echo "$!" > "/var/run/HuggingFlowTransformers/${SERVICE_NAME}.pid"
 }
 
