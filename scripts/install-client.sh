@@ -53,16 +53,22 @@ download() {
 }
 
 gateway_hostport() {
-  python3 - "$GATEWAY_URL" <<'PY'
-import sys
-from urllib.parse import urlparse
-url = urlparse(sys.argv[1])
-if url.scheme != "tls" or not url.netloc:
-    raise SystemExit("HFT_GATEWAY_URL must use tls://host:port format")
-host = url.hostname
-port = url.port or 443
-print(f"{host}:{port}")
-PY
+  local rest hostport
+  rest="${GATEWAY_URL#tls://}"
+  if [[ "$rest" == "$GATEWAY_URL" || -z "$rest" ]]; then
+    echo "HFT_GATEWAY_URL must use tls://host:port format" >&2
+    exit 1
+  fi
+  hostport="${rest%%/*}"
+  if [[ -z "$hostport" ]]; then
+    echo "HFT_GATEWAY_URL must include a host." >&2
+    exit 1
+  fi
+  if [[ "$hostport" == *:* ]]; then
+    printf '%s\n' "$hostport"
+  else
+    printf '%s:443\n' "$hostport"
+  fi
 }
 
 download_gateway_ca_from_gateway() {
