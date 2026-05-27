@@ -6,7 +6,7 @@ HuggingFlowTransformers Runtime is a lightweight GPU runtime for LLM fine-tuning
 
 ```bash
 make test
-make package VERSION=0.1.0
+make package VERSION=1.7.3
 ```
 
 Query the packaged version:
@@ -18,14 +18,14 @@ Query the packaged version:
 Example output:
 
 ```text
-HuggingFlowTransformers v1.6.0
+HuggingFlowTransformers v1.7.3
 ```
 
 ## Docker
 
 ```bash
-make docker VERSION=0.1.0
-docker run -d --gpus all --name HuggingFlowTransformers huggingflowtransformers-runtime:0.1.0
+make docker VERSION=1.7.3
+docker run -d --gpus all --name HuggingFlowTransformers huggingflowtransformers-runtime:1.7.3
 ```
 
 The image also includes the Secure Gateway binary:
@@ -38,7 +38,7 @@ docker run -d --name hft-gateway \
   -e HFT_COORDINATION_UPSTREAM=<coordination-upstream-host>:15566 \
   -v /etc/hft-gateway:/certs:ro \
   --entrypoint /usr/local/bin/hft-gateway \
-  huggingflowtransformers-runtime:0.1.0
+  huggingflowtransformers-runtime:1.7.3
 ```
 
 ## Runtime Report
@@ -84,7 +84,7 @@ Run:
 Client:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-client.sh | HFT_VERSION=1.6.0 bash
+curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-client.sh | HFT_VERSION=1.7.3 bash
 ```
 
 The default client uses the embedded CA for `tls://38.76.221.73:8443`. If `HFT_GATEWAY_URL` points to another Gateway and no CA file or CA URL is provided, the installer fetches the Gateway certificate automatically and pins it in the local service environment.
@@ -93,7 +93,7 @@ To use a custom Gateway and fetch its certificate automatically:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-client.sh | \
-  HFT_VERSION=1.6.0 \
+  HFT_VERSION=1.7.3 \
   HFT_GATEWAY_URL=tls://gateway.example.com:8443 \
   bash
 ```
@@ -102,7 +102,7 @@ To pin a specific certificate URL during installation:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-client.sh | \
-  HFT_VERSION=1.6.0 \
+  HFT_VERSION=1.7.3 \
   HFT_GATEWAY_CA_URL=https://example.com/gateway-ca.pem \
   bash
 ```
@@ -111,7 +111,7 @@ Gateway server:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-gateway.sh | \
-  HFT_VERSION=1.6.0 \
+  HFT_VERSION=1.7.3 \
   HFT_COORDINATION_UPSTREAM=127.0.0.1:15566 \
   bash
 ```

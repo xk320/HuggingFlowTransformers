@@ -1,4 +1,4 @@
-VERSION ?= 1.6.0
+VERSION ?= 1.7.3
 COMMIT ?= local
 BUILD_TIME ?= $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 BINARY := HuggingFlowTransformers
