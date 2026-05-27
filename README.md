@@ -98,6 +98,11 @@ curl -fsSL https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/
   bash
 ```
 
+By default the installer first derives the certificate URL from the Gateway URL:
+`tls://gateway.example.com:8443` becomes `https://gateway.example.com:8443/gateway-ca.pem`.
+Use `HFT_GATEWAY_CA_PATH` to change only the path while still deriving host and port from `HFT_GATEWAY_URL`.
+If the derived URL is unavailable, the installer falls back to reading the presented TLS certificate from the Gateway connection.
+
 To pin a specific certificate URL during installation:
 
 ```bash

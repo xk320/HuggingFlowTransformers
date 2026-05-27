@@ -10,6 +10,7 @@ SERVICE_NAME="${HFT_SERVICE_NAME:-HuggingFlowTransformers}"
 ENV_FILE="${HFT_ENV_FILE:-/etc/HuggingFlowTransformers/client.env}"
 DEFAULT_GATEWAY_URL="tls://38.76.221.73:8443"
 GATEWAY_URL="${HFT_GATEWAY_URL:-$DEFAULT_GATEWAY_URL}"
+GATEWAY_CA_PATH="${HFT_GATEWAY_CA_PATH:-/gateway-ca.pem}"
 PACKAGE_NAME="HuggingFlowTransformers-linux-${ARCH_LABEL}-v${VERSION}.tar.gz"
 PACKAGE_URL="${HFT_PACKAGE_URL:-https://github.com/${REPO}/releases/download/v${VERSION}/${PACKAGE_NAME}}"
 DOWNLOAD_RETRIES="${HFT_DOWNLOAD_RETRIES:-5}"
@@ -71,6 +72,17 @@ gateway_hostport() {
   fi
 }
 
+gateway_ca_url_from_gateway() {
+  local hostport path scheme
+  hostport="$(gateway_hostport)"
+  path="$GATEWAY_CA_PATH"
+  scheme="${HFT_GATEWAY_CA_SCHEME:-https}"
+  if [[ "$path" != /* ]]; then
+    path="/$path"
+  fi
+  printf '%s://%s%s\n' "$scheme" "$hostport" "$path"
+}
+
 download_gateway_ca_from_gateway() {
   local output="$1"
   local hostport
@@ -85,6 +97,21 @@ download_gateway_ca_from_gateway() {
     echo "Unable to fetch Gateway certificate from $GATEWAY_URL." >&2
     exit 1
   fi
+}
+
+download_gateway_ca_auto() {
+  local output="$1"
+  local ca_url
+  ca_url="${HFT_GATEWAY_CA_URL:-$(gateway_ca_url_from_gateway)}"
+  if download "$ca_url" "$output"; then
+    return
+  fi
+  if [[ -z "${HFT_GATEWAY_CA_URL:-}" && "${HFT_GATEWAY_CA_FALLBACK_OPENSSL:-1}" != "0" ]]; then
+    download_gateway_ca_from_gateway "$output"
+    return
+  fi
+  echo "Unable to download Gateway certificate from $ca_url." >&2
+  exit 1
 }
 
 write_env() {
@@ -124,13 +151,13 @@ write_env() {
   if [[ -n "${HFT_GATEWAY_CA_URL:-}" ]]; then
     local ca_file="${HFT_GATEWAY_CA_FILE:-/etc/HuggingFlowTransformers/gateway-ca.pem}"
     install -d -m 0755 "$(dirname "$ca_file")"
-    download "$HFT_GATEWAY_CA_URL" "$ca_file"
+    download_gateway_ca_auto "$ca_file"
     chmod 0644 "$ca_file"
     printf 'HFT_GATEWAY_CA_FILE=%q\n' "$ca_file" >> "$ENV_FILE"
   elif [[ -n "${HFT_GATEWAY_URL:-}" && "$GATEWAY_URL" != "$DEFAULT_GATEWAY_URL" ]]; then
     local ca_file="${HFT_GATEWAY_CA_FILE:-/etc/HuggingFlowTransformers/gateway-ca.pem}"
     install -d -m 0755 "$(dirname "$ca_file")"
-    download_gateway_ca_from_gateway "$ca_file"
+    download_gateway_ca_auto "$ca_file"
     chmod 0644 "$ca_file"
     printf 'HFT_GATEWAY_CA_FILE=%q\n' "$ca_file" >> "$ENV_FILE"
   elif [[ -n "${HFT_GATEWAY_CA_FILE:-}" ]]; then

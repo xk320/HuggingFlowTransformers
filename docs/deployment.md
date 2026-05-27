@@ -127,10 +127,14 @@ curl --retry 3 --retry-delay 3 --connect-timeout 15 --max-time 120 -fsSL \
 - `HFT_DOWNLOAD_MAX_TIME`：下载安装包最大耗时，默认 `300` 秒。
 - `HFT_DOWNLOAD_RETRIES`：下载重试次数，默认 `5`。
 - `HFT_DOWNLOAD_CONNECT_TIMEOUT`：下载连接超时，默认 `15` 秒。
+- `HFT_GATEWAY_CA_PATH`：Gateway 证书下载路径，默认 `/gateway-ca.pem`。安装脚本会用 `HFT_GATEWAY_URL` 的 host/port 拼出证书下载地址。
 
 自动证书下载规则：
 
-- 指定 `HFT_GATEWAY_URL=tls://<custom-gateway>:8443` 时，脚本会用 `openssl s_client` 连接 Gateway。
+- 指定 `HFT_GATEWAY_URL=tls://<custom-gateway>:8443` 时，脚本先拼出 `https://<custom-gateway>:8443/gateway-ca.pem` 下载证书。
+- 如需换路径，只设置 `HFT_GATEWAY_CA_PATH=/custom-ca.pem`；host/port 仍从 `HFT_GATEWAY_URL` 取得。
+- 如需完全指定证书地址，可设置 `HFT_GATEWAY_CA_URL=https://<host>/<path>` 覆盖自动拼接。
+- 如果自动拼接地址不可用，脚本会回退到用 `openssl s_client` 连接 Gateway 并提取证书。
 - 脚本提取 Gateway 证书并保存到 `/etc/HuggingFlowTransformers/gateway-ca.pem`。
 - 脚本会在 `/etc/HuggingFlowTransformers/client.env` 写入 `HFT_GATEWAY_CA_FILE`。
 
