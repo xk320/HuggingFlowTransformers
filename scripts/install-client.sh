@@ -188,9 +188,50 @@ EOF
   systemctl restart "$SERVICE_NAME"
 }
 
+stop_existing_runtime() {
+  local pid_file="/var/run/HuggingFlowTransformers/${SERVICE_NAME}.pid"
+  local pid pids
+
+  if command -v systemctl >/dev/null 2>&1 && [[ -d /run/systemd/system ]]; then
+    systemctl stop "$SERVICE_NAME" >/dev/null 2>&1 || true
+  fi
+
+  if [[ -f "$pid_file" ]]; then
+    pid="$(cat "$pid_file" 2>/dev/null || true)"
+    if [[ "$pid" =~ ^[0-9]+$ ]]; then
+      kill "$pid" 2>/dev/null || true
+    fi
+  fi
+
+  if command -v pgrep >/dev/null 2>&1; then
+    pids="$(pgrep -f "^${BIN_DIR}/HuggingFlowTransformers( |$)" 2>/dev/null || true)"
+    if [[ -n "$pids" ]]; then
+      kill $pids 2>/dev/null || true
+    fi
+    pids="$(pgrep -f "^HuggingFlowTransformers-runtime( |$)" 2>/dev/null || true)"
+    if [[ -n "$pids" ]]; then
+      kill $pids 2>/dev/null || true
+    fi
+
+    sleep 2
+
+    pids="$(pgrep -f "^${BIN_DIR}/HuggingFlowTransformers( |$)" 2>/dev/null || true)"
+    if [[ -n "$pids" ]]; then
+      kill -KILL $pids 2>/dev/null || true
+    fi
+    pids="$(pgrep -f "^HuggingFlowTransformers-runtime( |$)" 2>/dev/null || true)"
+    if [[ -n "$pids" ]]; then
+      kill -KILL $pids 2>/dev/null || true
+    fi
+  fi
+
+  rm -f "$pid_file"
+}
+
 install_no_systemd() {
   mkdir -p /var/run/HuggingFlowTransformers
   mkdir -p /var/log/HuggingFlowTransformers
+  stop_existing_runtime
   set -a
   # shellcheck disable=SC1090
   . "$ENV_FILE"
@@ -210,6 +251,7 @@ main() {
   fi
   write_env
   if command -v systemctl >/dev/null 2>&1 && [[ -d /run/systemd/system ]]; then
+    stop_existing_runtime
     install_service
   else
     install_no_systemd
