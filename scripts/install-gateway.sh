@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="${HFT_REPO:-xk320/HuggingFlowTransformers}"
-VERSION="${HFT_VERSION:-1.7.4}"
+VERSION="${HFT_VERSION:-1.7.5-beta}"
 ARCH_LABEL="${HFT_ARCH_LABEL:-x86_64}"
 INSTALL_DIR="${HFT_INSTALL_DIR:-/opt/HuggingFlowTransformers}"
 BIN_DIR="${HFT_BIN_DIR:-/usr/local/bin}"

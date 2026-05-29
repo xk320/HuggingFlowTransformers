@@ -9,7 +9,7 @@ import (
 
 func TestRunVersionPrintsBrandedVersion(t *testing.T) {
 	oldVersion := hftVersion
-	hftVersion = "1.7.4"
+	hftVersion = "1.7.5-beta"
 	defer func() { hftVersion = oldVersion }()
 
 	var output bytes.Buffer
@@ -19,7 +19,7 @@ func TestRunVersionPrintsBrandedVersion(t *testing.T) {
 		}
 	})
 
-	if got := output.String(); got != "HuggingFlowTransformers v1.7.4\n" {
+	if got := output.String(); got != "HuggingFlowTransformers v1.7.5-beta\n" {
 		t.Fatalf("version output = %q", got)
 	}
 }

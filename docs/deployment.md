@@ -41,9 +41,9 @@ GPU 客户端：
 
 当前稳定版：
 
-- 版本：`v1.7.4`
+- 版本：`v1.7.5-beta`
 - Release 仓库：`https://github.com/xk320/HuggingFlowTransformers`
-- Linux x86_64 包名：`HuggingFlowTransformers-linux-x86_64-v1.7.4.tar.gz`
+- Linux x86_64 包名：`HuggingFlowTransformers-linux-x86_64-v1.7.5-beta.tar.gz`
 
 查询版本：
 
@@ -55,8 +55,8 @@ hft-gateway --version
 预期输出示例：
 
 ```text
-HuggingFlowTransformers v1.7.4
-HuggingFlowTransformers Gateway v1.7.4
+HuggingFlowTransformers v1.7.5-beta
+HuggingFlowTransformers Gateway v1.7.5-beta
 ```
 
 ## 4. Gateway 一键部署
@@ -66,7 +66,7 @@ HuggingFlowTransformers Gateway v1.7.4
 ```bash
 curl --retry 3 --retry-delay 3 --connect-timeout 15 --max-time 120 -fsSL \
   https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-gateway.sh | \
-  HFT_VERSION=1.7.4 \
+  HFT_VERSION=1.7.5-beta \
   HFT_COORDINATION_UPSTREAM=127.0.0.1:15566 \
   HFT_GATEWAY_LISTEN=0.0.0.0:8443 \
   HFT_GATEWAY_SERVER_NAME=<gateway-ip-or-domain> \
@@ -78,7 +78,7 @@ curl --retry 3 --retry-delay 3 --connect-timeout 15 --max-time 120 -fsSL \
 - `HFT_COORDINATION_UPSTREAM`：Gateway 解密后转发到的上游地址，必填。
 - `HFT_GATEWAY_LISTEN`：Gateway 监听地址，默认建议 `0.0.0.0:8443`。
 - `HFT_GATEWAY_SERVER_NAME`：证书 SAN 使用的 IP 或域名。客户端用 IP 连接时必须填写该 IP。
-- `HFT_VERSION`：安装版本，当前稳定版为 `1.7.4`。
+- `HFT_VERSION`：安装版本，当前稳定版为 `1.7.5-beta`。
 
 证书规则：
 
@@ -112,7 +112,7 @@ journalctl -u hft-gateway --since '10 minutes ago' --no-pager | tail -n 80
 ```bash
 curl --retry 3 --retry-delay 3 --connect-timeout 15 --max-time 120 -fsSL \
   https://raw.githubusercontent.com/xk320/HuggingFlowTransformers/main/scripts/install-client.sh | \
-  HFT_VERSION=1.7.4 \
+  HFT_VERSION=1.7.5-beta \
   HFT_GATEWAY_URL=tls://<gateway-ip-or-domain>:8443 \
   HFT_DEVICES=0 \
   bash
@@ -158,7 +158,7 @@ tail -n 80 /var/log/HuggingFlowTransformers/client.log
 
 全流程通过标准：
 
-- 客户端安装完成并输出 `HuggingFlowTransformers v1.7.4`。
+- 客户端安装完成并输出 `HuggingFlowTransformers v1.7.5-beta`。
 - `/etc/HuggingFlowTransformers/gateway-ca.pem` 存在。
 - `/etc/HuggingFlowTransformers/client.env` 中存在 `HFT_GATEWAY_CA_FILE`。
 - GPU 上存在 `HuggingFlowTransformers-runtime` 计算进程。
@@ -339,7 +339,7 @@ ss -lntp | grep ':8443'
 
 验证结果：
 
-- Gateway 一键部署输出 `HuggingFlowTransformers Gateway v1.7.4`。
+- Gateway 一键部署输出 `HuggingFlowTransformers Gateway v1.7.5-beta`。
 - Gateway systemd 状态为 `active`。
 - Gateway 证书存在 IP SAN。
 - GPU 旧应用进程和目录已清理。

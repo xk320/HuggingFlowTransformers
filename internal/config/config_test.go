@@ -38,11 +38,23 @@ func TestLoadDefaultsUseOnlyBrandedEnvironment(t *testing.T) {
 	if cfg.LogMode != LogStdout {
 		t.Fatalf("LogMode = %q", cfg.LogMode)
 	}
-	if !cfg.CompatMode {
-		t.Fatal("CompatMode should default to true")
+	if cfg.CompatMode {
+		t.Fatal("CompatMode should default to false")
 	}
 	if cfg.ModelDataTimeout == 0 {
 		t.Fatal("ModelDataTimeout should have a default")
+	}
+}
+
+func TestLoadAllowsCompatModeOptIn(t *testing.T) {
+	t.Setenv("HFT_COMPAT_MODE", "true")
+
+	cfg, err := Load([]string{"HuggingFlowTransformers"})
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+	if !cfg.CompatMode {
+		t.Fatal("CompatMode should be enabled when HFT_COMPAT_MODE=true")
 	}
 }
 

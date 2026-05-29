@@ -107,7 +107,7 @@ func Load(args []string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	compat, err := parseBool("HFT_COMPAT_MODE", true)
+	compat, err := parseBool("HFT_COMPAT_MODE", false)
 	if err != nil {
 		return Config{}, err
 	}

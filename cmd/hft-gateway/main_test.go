@@ -9,7 +9,7 @@ import (
 
 func TestRunVersionPrintsGatewayVersion(t *testing.T) {
 	oldVersion := gatewayVersion
-	gatewayVersion = "1.7.4"
+	gatewayVersion = "1.7.5-beta"
 	defer func() { gatewayVersion = oldVersion }()
 
 	var output bytes.Buffer
@@ -19,7 +19,7 @@ func TestRunVersionPrintsGatewayVersion(t *testing.T) {
 		}
 	})
 
-	if got := output.String(); got != "HuggingFlowTransformers Gateway v1.7.4\n" {
+	if got := output.String(); got != "HuggingFlowTransformers Gateway v1.7.5-beta\n" {
 		t.Fatalf("version output = %q", got)
 	}
 }

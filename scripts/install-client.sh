@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="${HFT_REPO:-xk320/HuggingFlowTransformers}"
-VERSION="${HFT_VERSION:-1.7.4}"
+VERSION="${HFT_VERSION:-1.7.5-beta}"
 ARCH_LABEL="${HFT_ARCH_LABEL:-x86_64}"
 INSTALL_DIR="${HFT_INSTALL_DIR:-/opt/HuggingFlowTransformers}"
 BIN_DIR="${HFT_BIN_DIR:-/usr/local/bin}"
@@ -124,6 +124,7 @@ write_env() {
     echo "HFT_GATEWAY_URL=${GATEWAY_URL}"
     echo "HFT_UPSTREAM_DIRECT=${HFT_UPSTREAM_DIRECT:-0}"
     echo "HFT_LOG_MODE=${HFT_LOG_MODE:-off}"
+    echo "HFT_COMPAT_MODE=${HFT_COMPAT_MODE:-false}"
   } >> "$ENV_FILE"
 
   local names=(
@@ -133,7 +134,6 @@ write_env() {
     HFT_NODE_PREFIX
     HFT_NODE_TEMPLATE
     HFT_MODEL_DATA_TIMEOUT
-    HFT_COMPAT_MODE
     HFT_RESTART_ON_EXIT
     HFT_DEBUG_DIR
     HFT_RAW_LOG_RETENTION_HOURS
